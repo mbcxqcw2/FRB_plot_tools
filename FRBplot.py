@@ -71,7 +71,8 @@ for i in range(block.shape[0]):
 #downsample by convolving with boxcar
 dedisp_timeseries = block_dedisp.sum(axis=0)
 dedisp_timeseries_downsamp = convolve(dedisp_timeseries,Box1DKernel(int(downsamp)))
-dedisp_timeseries_downsamp = dedisp_timeseries_downsamp[downsamp-1:-(downsamp-1)]#remove the first downsamp-1 and last downsamp-1 bins as convolution pads with zeros
+dedisp_timeseries_downsamp = dedisp_timeseries_downsamp[downsamp-1:-(downsamp-1+1)]#remove the first downsamp-1 and last downsamp-1 bins as convolution pads with zeros.
+                                                                                   #the additional +1 added to the end sample is as python is zero-indexed. -1 removes no bins,... etc
 for i in range(block_dedisp.shape[0]):
     block_dedisp[i,:] = convolve(block_dedisp[i,:],Box1DKernel(int(downsamp)))
     
@@ -90,7 +91,7 @@ ax2=fig.add_subplot(grid[0:1,0:6])
 ax2.set_title('Dedispersed Timeseries')
 print minsamp,minsamp+nsamps
 ax2.set_xlim([timesamples[minsamp+(downsamp-1)],timesamples[minsamp+nsamps-(downsamp-1)]])
-ax2.plot(timesamples[minsamp+(downsamp-1):minsamp+nsamps-(downsamp-1)],dedisp_timeseries_downsamp)
+ax2.plot(timesamples[minsamp+(downsamp-1):minsamp+nsamps-(downsamp-1+1)],dedisp_timeseries_downsamp)
 
 #plot dispersed pulse
 ax3=fig.add_subplot(grid[3:5,0:6])
