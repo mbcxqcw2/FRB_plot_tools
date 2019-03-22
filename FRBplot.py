@@ -71,6 +71,7 @@ for i in range(block.shape[0]):
 #downsample by convolving with boxcar
 dedisp_timeseries = block_dedisp.sum(axis=0)
 dedisp_timeseries_downsamp = convolve(dedisp_timeseries,Box1DKernel(int(downsamp)))
+dedisp_timeseries_downsamp = dedisp_timeseries_downsamp[downsamp-1:-(downsamp-1)]#remove the first downsamp-1 and last downsamp-1 bins as convolution pads with zeros
 for i in range(block_dedisp.shape[0]):
     block_dedisp[i,:] = convolve(block_dedisp[i,:],Box1DKernel(int(downsamp)))
     
@@ -80,21 +81,22 @@ fig=plt.figure(figsize=(5,8))
 
 ax1=fig.add_subplot(grid[1:3,0:6])
 ax1.imshow(block_dedisp,origin='lower',aspect='auto',cmap='gray_r',extent=[timesamples[minsamp],timesamples[minsamp+nsamps],topchan,botchan])
-ax1.set_xlabel('Time since obs start (s)')
-ax1.set_ylabel('Frequency (MHz)')
+ax1.set_xlabel('Seconds since {0} {1}'.format(fil.header.obs_date,fil.header.obs_time),fontsize=8)
+ax1.set_ylabel('Frequency (MHz)',fontsize=8)
 ax1.set_title('Dedispersed Dynamic Spectrum')
 
 #plot downsampled timeseries
 ax2=fig.add_subplot(grid[0:1,0:6])
 ax2.set_title('Dedispersed Timeseries')
-ax2.set_xlim([timesamples[minsamp],timesamples[minsamp+nsamps]])
-ax2.plot(timesamples[minsamp:minsamp+nsamps],dedisp_timeseries_downsamp)
+print minsamp,minsamp+nsamps
+ax2.set_xlim([timesamples[minsamp+(downsamp-1)],timesamples[minsamp+nsamps-(downsamp-1)]])
+ax2.plot(timesamples[minsamp+(downsamp-1):minsamp+nsamps-(downsamp-1)],dedisp_timeseries_downsamp)
 
 #plot dispersed pulse
 ax3=fig.add_subplot(grid[3:5,0:6])
 ax3.imshow(block,origin='lower',aspect='auto',cmap='gray_r',extent=[timesamples[minsamp],timesamples[minsamp+nsamps],topchan,botchan])
-ax3.set_xlabel('Time since obs start (s)')
-ax3.set_ylabel('Frequency (MHz)')
+ax3.set_xlabel('Seconds since {0} {1}'.format(fil.header.obs_date,fil.header.obs_time),fontsize=8)
+ax3.set_ylabel('Frequency (MHz)',fontsize=8)
 ax3.set_title('Dispersed Dynamic Spectrum')
 
 #plot dispersed bandpass
