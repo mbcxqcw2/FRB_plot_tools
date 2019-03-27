@@ -21,8 +21,8 @@ if len(a)!=n_inputs+1:
 #currently having issues with astroAccelerate as it doesn't recognise liam's filterbank file as an 8-bit file
 
 searchtype = str(a[1])
-if searchtype not in ['presto','seek','destroy','dedisperse_all']:
-    print 'Warning: invalid search algorithm. Must be presto, seek, destroy or dedisperse_all.'
+if searchtype not in ['presto','seek','destroy','dedisperse_all','astroaccelerate']:
+    print 'Warning: invalid search algorithm. Must be presto, seek, destroy, dedisperse_all or astroaccelerate.'
 
 print 'Candidates files generated using {0} will be plotted.'.format(searchtype)
 
@@ -204,6 +204,8 @@ elif searchtype=='dedisperse_all':
     candfile_ext = '.dd'
 elif searchtype=='seek':
     candfile_ext = '.s'
+elif searchtype=='astroaccelerate':
+    candfile_ext = '.aa'
 
 
 #extract filterbank header
@@ -281,7 +283,7 @@ if searchtype=='dedisperse_all':
     sample = np.array(cands[:,10],dtype='float') #4 or 5 or 10???
     times = sample*filhead.tsamp
     
-    #case: seek
+#case: seek
 if searchtype=='seek':
     
     #initialise seek cand. array (contains 5 columns)
@@ -298,6 +300,31 @@ if searchtype=='seek':
     sample=cands[:,2]
     snrs=cands[:,3]
     times=sample*filhead.tsamp
+
+#case: AstroAccelerate
+if searchtype=='astroaccelerate':
+    
+    #initialise aa cand. array (contains 4 columns)
+    cands=np.empty((1,4))
+    for i in range(len(candfiles)):
+        #open binary .dat file
+        binfile=open(candfiles[0])
+        #load candidates
+        check=np.fromfile(binfile,dtype='f4')
+        if check.shape!=(0,):#if candfile is not empty
+            if check.shape==(4,):#if only one candidate, reshape to allow appending
+                check=check.reshape(1,4)
+            else:#else reshape to correct shape
+                check=check.reshape((check.shape[0]/4,4))
+            cands=np.concatenate((cands,check),axis=0)
+        #close binary file        
+        binfile.close()
+    #reassign cands to arrays
+    dms      = cands[:,0]
+    downsamp = cands[:,3]
+    snrs     = cands[:,2]
+    times    = cands[:,1]
+    sample   = np.zeros_like(times) #astro_accelerate doesn't provide sample number
     
 print 'Total number of candidates found by {0}: {1}'.format(searchtype,cands.shape[0])
     
