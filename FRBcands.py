@@ -15,13 +15,13 @@ if len(a)!=n_inputs+1:
     print "Error: {0} arguments required. {1} provided.".format(n_inputs,len(a))
 
 #search algorithm used to create candidate file
-#options: presto, destroy, dedisperse_all, seek
+#options: presto, destroy, dedisperse_all, seek, astroaccelerate, heimdall
 
 #currently having issues with astroAccelerate as it doesn't recognise liam's filterbank file as an 8-bit file
 
 searchtype = str(a[1])
-if searchtype not in ['presto','seek','destroy','dedisperse_all','astroaccelerate']:
-    print 'Warning: invalid search algorithm. Must be presto, seek, destroy, dedisperse_all or astroaccelerate.'
+if searchtype not in ['presto','seek','destroy','dedisperse_all','astroaccelerate','heimdall']:
+    print 'Warning: invalid search algorithm. Must be presto, seek, destroy, dedisperse_all, astroaccelerate, or heimdall.'
 
 print 'Candidates files generated using {0} will be plotted.'.format(searchtype)
 
@@ -84,6 +84,8 @@ elif searchtype=='seek':
     candfile_ext = '.s'
 elif searchtype=='astroaccelerate':
     candfile_ext = '.aa'
+elif searchtype=='heimdall':
+    candfile_ext = '.h'
 
 
 #extract filterbank header
@@ -180,7 +182,7 @@ if searchtype=='astroaccelerate':
     cands=np.empty((1,4))
     for i in range(len(candfiles)):
         #open binary .dat file
-        binfile=open(candfiles[0])
+        binfile=open(candfile_loc+candfiles[i])
         #load candidates
         check=np.fromfile(binfile,dtype='f4')
         if check.shape!=(0,):#if candfile is not empty
@@ -197,6 +199,25 @@ if searchtype=='astroaccelerate':
     snrs     = cands[:,2]
     times    = cands[:,1]
     sample   = np.zeros_like(times) #astro_accelerate doesn't provide sample number
+
+#case: heimdall
+if searchtype=='heimdall':
+
+    #initialise heimdall cand. array (contains 9 columns)
+    cands=np.empty((1,9))
+    for i in range(len(candfiles)):
+        check=np.loadtxt(candfile_loc+candfiles[i],skiprows=0)
+        if check.shape!=(0,):#if candidate file is not empty
+            if check.shape==(9,0):#if only one candidate, reshape to allow appending
+                check=check.reshape(1,9)
+            cands=np.concatenate((cands,check),axis=0)
+    #reassign cands to arrays
+    dms      = cands[:,5]
+    downsamp = cands[:,3]
+    sample   = cands[:,1]#heimdall returns highest frequency channel sample number
+    snrs     = cands[:,0]
+    times    = cands[:,2]
+    
     
 print 'Total number of candidates found by {0}: {1}'.format(searchtype,cands.shape[0])
     
