@@ -295,7 +295,7 @@ if searchtype=='seek':
         check=np.loadtxt(candfile_loc+candfiles[i],skiprows=1)
         if check.shape!=(0,):#if candfile is not empty
             if check.shape==(5,):#if only one candidate, reshape to allow appending
-                check=check.reshape(1,4)
+                check=check.reshape(1,5)
             cands=np.concatenate((cands,check),axis=0)
     #reassign cands to arrays
     dms = cands[:,0]
