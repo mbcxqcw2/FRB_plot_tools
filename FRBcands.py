@@ -9,7 +9,7 @@ import sys
 
 a=sys.argv
 
-n_inputs=8
+n_inputs=9
 
 if len(a)!=n_inputs+1:
     print "Error: {0} arguments required. {1} provided.".format(n_inputs,len(a))
@@ -67,6 +67,12 @@ print 'Candidates above the S/N threshold: {0} will be plotted'.format(snrThresh
 #a '.dd' file extension. Input its directory location.
 
 candfile_loc = a[8]
+
+outOpt = str(a[9])
+if outOpt not in ['display','save','both']:
+    print 'Warning: invalid output option chosen. Must be one of: display, save, or both.'
+
+print 'Output option chosen: {0}'.format(outOpt)
 
 print 'Candidate files within directory: {0} will be plotted.'.format(candfile_loc)
 
@@ -306,5 +312,9 @@ ax3.set_title('Single pulse results for "{0}"\
                         filhead.tstart,
                         filhead.fcenter),fontsize=8)
 fig.tight_layout()
-#plt.savefig('single_pulse_cands_{0}.png'.format(searchtype))
-plt.show()
+
+if (outOpt=='save') or (outOpt=='both'):
+    plt.savefig('single_pulse_cands_{0}_{1}_{2}_{3}_{4}_{5}_{6}.png'.format(searchtype,cand_filID,loDM,hiDM,loTime,hiTime,snrThresh))
+
+if (outOpt=='display') or (outOpt=='both'):
+    plt.show()
