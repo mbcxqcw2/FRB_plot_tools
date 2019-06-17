@@ -223,7 +223,9 @@ timesamples=np.arange(nsamples)*samptime
 
 #extract all candidate files
 files = os.listdir(candfile_loc)
-candfiles = [i for i in files if i[-len(candfile_ext):]==candfile_ext]
+candfiles = [i for i in files if i[-len(candfile_ext):]==candfile_ext] #get all with correct file extension
+filname = filfile.split('/')[-1][0:-4] #extract only filterbank file name with no .fil extention or location
+candfiles = [i for i in candfiles if filname in i] #get only candidate files for correct filterbank
 
 print '... {0} candidate files with file extension: {1} found.'.format(len(candfiles),candfile_ext)
 
