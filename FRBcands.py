@@ -314,7 +314,7 @@ ax3.set_title('Single pulse results for "{0}"\
 fig.tight_layout()
 
 if (outOpt=='save') or (outOpt=='both'):
-    plt.savefig('single_pulse_cands_{0}_{1}_{2}_{3}_{4}_{5}_{6}.png'.format(searchtype,cand_filID,loDM,hiDM,loTime,hiTime,snrThresh))
+    plt.savefig('single_pulse_cands_{0}_{1}_{2}_{3}_{4}_{5}_{6}.png'.format(cand_filID,searchtype,loDM,hiDM,loTime,hiTime,snrThresh))
 
 if (outOpt=='display') or (outOpt=='both'):
     plt.show()
