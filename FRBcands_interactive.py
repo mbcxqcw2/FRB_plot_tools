@@ -125,6 +125,7 @@ def func(event, ax,boxcar):
     #according to DM
     dt = (1./2.41e-16)*(((botchan*1e6)**(-2)-((topchan*1e6)**(-2))))*DM
     print '\nCalculated DM sweep across the band: {0}s'.format(dt)
+    print "\n\nWARNING: PAY ATTENTION TO THE DM SWEEP TIME ACROSS THE BAND!\nZOOM IN ENOUGH ON YOUR CANDIDATE PLOT THAT THE TIME WITHIN THE MARKER DOESN'T EXCWEED THIS TIME...\nOR ELSE YOU WILL MISS THE CANDIDATE WHEN PLOTTING!"
 
     #find nearest sample, sample time in fb file to the FRB
     nearest_sample = (np.abs(timesamples-time)).argmin()
